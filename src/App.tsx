@@ -1,9 +1,10 @@
 import "./App.css";
+import Router from "./components/shared/router/Router";
 
 function App() {
   return (
     <>
-      <p>test</p>
+      <Router />
     </>
   );
 }

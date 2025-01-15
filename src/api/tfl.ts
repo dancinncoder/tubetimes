@@ -34,7 +34,7 @@ export const getLineArrivals = async () => {
 export const getStationArrivals = async () => {
   try {
     const response = await axios.get(
-      "https://api.tfl.gov.uk/stopPoint/490005183E/arrivals",
+      "https://api.tfl.gov.uk/stopPoint/940GZZLUPCO/arrivals",
       {
         params: {
           app_key: appKey,

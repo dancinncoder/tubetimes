@@ -86,38 +86,6 @@ export type Database = {
           },
         ]
       }
-      favorites: {
-        Row: {
-          created_at: string
-          destination_id: string | null
-          direction: string | null
-          id: number
-          station_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          destination_id?: string | null
-          direction?: string | null
-          id?: number
-          station_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          destination_id?: string | null
-          direction?: string | null
-          id?: number
-          station_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "favorites_station_id_fkey"
-            columns: ["station_id"]
-            isOneToOne: true
-            referencedRelation: "stations"
-            referencedColumns: ["uid"]
-          },
-        ]
-      }
       lines: {
         Row: {
           color: string | null
@@ -144,6 +112,35 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      real_time_updates: {
+        Row: {
+          data: Json | null
+          id: number
+          latest_update: string
+          station_id: string | null
+        }
+        Insert: {
+          data?: Json | null
+          id?: number
+          latest_update?: string
+          station_id?: string | null
+        }
+        Update: {
+          data?: Json | null
+          id?: number
+          latest_update?: string
+          station_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "real_time_updates_station_id_fkey"
+            columns: ["station_id"]
+            isOneToOne: true
+            referencedRelation: "stations"
+            referencedColumns: ["uid"]
+          },
+        ]
       }
       stations: {
         Row: {

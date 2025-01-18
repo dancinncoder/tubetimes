@@ -31,10 +31,10 @@ export const getLineArrivals = async () => {
   }
 };
 
-export const getStationArrivals = async () => {
+export const getStationArrivals = async (uid: string) => {
   try {
     const response = await axios.get(
-      "https://api.tfl.gov.uk/stopPoint/940GZZLUPCO/arrivals",
+      `https://api.tfl.gov.uk/stopPoint/${uid}/arrivals`,
       {
         params: {
           app_key: appKey,

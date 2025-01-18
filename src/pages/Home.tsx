@@ -1,79 +1,168 @@
 import { useEffect, useState } from "react";
 import { getStations } from "../api/database/supabase";
-// import { getLineArrivals, getStationArrivals } from "../api/tfl";
+import { getStationArrivals } from "../api/tfl";
+
+type TypeStations = {
+  created_at: string;
+  id: number;
+  lat: number;
+  long: number;
+  name: string;
+  uid: string;
+  updated_at: string;
+  zone: string;
+};
 
 function Home() {
-  // Tfl Api call test
-  // const [lineArrivals, setLineArrivals] = useState([]);
-  // const [stationArrivals, setStationArrivals] = useState([]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const lineArrivalData = await getLineArrivals();
-  //     const stationArrivalDAta = await getStationArrivals();
-  //     setLineArrivals(lineArrivalData);
-  //     setStationArrivals(stationArrivalDAta);
-  //   };
-
-  //   fetchData();
-  // }, []);
-  // console.log("line arrivals data:", lineArrivals);
-  // console.log("station arrivals data:", stationArrivals);
-
-  const [stations, setStations] = useState();
+  const [stations, setStations] = useState<TypeStations[]>([]); // All stations data
+  const [station, setStation] = useState<string>(""); // Search input
+  const [typedStationsList, setTypedStationsList] = useState<TypeStations[]>(
+    []
+  ); // Search results for list dropdown
+  const [showResultBoard, setShowResultBoard] = useState<boolean>(false); // Flag to show/hide the search result list
+  const [searchedStationData, setSearchedStationData] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const CACHE_EXPIRY = 2592000000; // 1 month
 
   useEffect(() => {
     const fetchData = async () => {
-      // Check initially if the stations data is expired
       const stationsData = await fetchStationsWithExpiry();
-      setStations(stationsData);
+      setStations(stationsData); // Load all stations into state
+      setIsLoading(false);
     };
 
     fetchData();
   }, []);
 
-  // CACHE STATIONS DATA
-  const fetchStationsData = async () => {
-    const cachedStations = localStorage.getItem("stations");
-    if (cachedStations) {
-      return JSON.parse(cachedStations);
-    }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const stationArrivalData = await getStationArrivals();
+  //     setSearchedStationData(stationArrivalData);
+  //   };
 
-    // If no cached data, fetch from the API
-    const stationsResponse = await getStations();
-    localStorage.setItem("stations", JSON.stringify(stationsResponse));
-    localStorage.setItem("stations_last_updated", Date.now().toString()); // Update the timestamp
-    return stationsResponse; // Return the fetched data
+  //   fetchData();
+  // }, []);
+
+  const fetchStationsData = async (): Promise<TypeStations[]> => {
+    try {
+      const cachedStations = localStorage.getItem("stations");
+      if (cachedStations) {
+        return JSON.parse(cachedStations);
+      }
+      const stationsResponse = await getStations();
+      localStorage.setItem("stations", JSON.stringify(stationsResponse));
+      localStorage.setItem("stations_last_updated", Date.now().toString());
+      return stationsResponse;
+    } catch (error) {
+      console.error("Failed to fetch stations data:", error);
+      return [];
+    }
   };
 
-  // UPDATE EXPIRED STATIONS DATA
-  const isCachedStationsExpired = () => {
+  const isCachedStationsExpired = (): boolean => {
     const lastUpdated = localStorage.getItem("stations_last_updated");
-    return lastUpdated ? Date.now() - Number(lastUpdated) > CACHE_EXPIRY : true; // Check if cache has expired
+    return lastUpdated ? Date.now() - Number(lastUpdated) > CACHE_EXPIRY : true;
   };
 
-  const fetchStationsWithExpiry = async () => {
+  const fetchStationsWithExpiry = async (): Promise<TypeStations[]> => {
     if (isCachedStationsExpired()) {
-      // Cache expired, fetch new data and store it
-      const stationsData = await fetchStationsData();
-      return stationsData;
+      return fetchStationsData();
     }
-
-    // Cache is valid, return cached data (ensure it's not null)
     const cachedStations = localStorage.getItem("stations");
-    return cachedStations ? JSON.parse(cachedStations) : []; // Return empty array if null
+    return cachedStations ? JSON.parse(cachedStations) : [];
   };
 
+  const handleTypeSearchStation = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setStation(value);
+
+    // Update typedStationsList only if there's a search term
+    if (value.trim() === "") {
+      setTypedStationsList([]); // Clear search results if input is empty
+      setShowResultBoard(false); // Hide result board if search term is cleared
+    } else {
+      showTypedStationsList(value);
+      setShowResultBoard(true); // Show result board if there's a search term
+    }
+  };
+
+  const showTypedStationsList = (searchTerm: string) => {
+    const result = stations.filter((s) =>
+      s.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setTypedStationsList(result);
+  };
+
+  const submitSearchTerm = (
+    clickedStationUid: string,
+    clickedStationName: string
+  ) => {
+    console.log("submitted station uid:", clickedStationUid);
+    getSearchedStationData(clickedStationUid);
+    setStation(clickedStationName); // Set the selected station name in the input
+    setShowResultBoard(false); // Hide the result board after selection
+  };
+
+  const getSearchedStationData = (uid: string) => {
+    const fetchData = async (uid: string) => {
+      const stationArrivalData = await getStationArrivals(uid);
+      setSearchedStationData(stationArrivalData);
+    };
+
+    fetchData(uid);
+  };
+
+  console.log("searchedStationData:", searchedStationData);
   return (
     <div>
       <h1>Home</h1>
-      <input type="text" />
-      {/* <ul>
-        {lineArrivals.map((lineArrival, index) => (
-          <li key={index}></li>
-        ))}
-      </ul> */}
+      {/* SEARCH ENGINE */}
+      <div>
+        <input
+          className="border-solid border-2 border-gray-200 rounded-lg"
+          onChange={handleTypeSearchStation}
+          value={station}
+          type="text"
+          placeholder="Search stations..."
+        />
+        {isLoading ? (
+          <p>Loading stations...</p>
+        ) : (
+          showResultBoard && (
+            <ul>
+              {
+                typedStationsList.length > 0
+                  ? typedStationsList.map((s) => (
+                      <li
+                        onClick={() => submitSearchTerm(s?.uid, s?.name)} // On click, pass the station data
+                        className="cursor-pointer hover:bg-blue-100 list-none"
+                        key={s.id}
+                      >
+                        <p>{s.name}</p>
+                      </li>
+                    ))
+                  : station && <p>No stations found.</p> // Show only if there's a search term
+              }
+            </ul>
+          )
+        )}
+      </div>
+      {/* SEARCH BOARD */}
+      <div>
+        {searchedStationData.length > 0 ? (
+          <ul>
+            {searchedStationData.map((arrival: any, index: number) => (
+              <li key={index}>
+                <p>Line: {arrival.lineName}</p>
+                <p>Expected Arrival: {arrival.expectedArrival}</p>
+                <p>Destination: {arrival.destinationName}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No arrival data available.</p>
+        )}
+      </div>
     </div>
   );
 }

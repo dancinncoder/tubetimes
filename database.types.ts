@@ -11,75 +11,75 @@ export type Database = {
     Tables: {
       arrivals: {
         Row: {
-          created_at: string
-          destination_id: string | null
-          destination_name: string | null
-          expected_arrival: string | null
+          createdAt: string
+          destinationName: string | null
+          destinationNaptanId: string | null
+          expectedArrival: string | null
           id: number
-          line_id: string | null
-          line_name: string | null
-          platform_name: string | null
-          station_id: string | null
-          station_name: string | null
-          time_to_station: number | null
+          lineId: string | null
+          lineName: string | null
+          NaptanId: string | null
+          platformName: string | null
+          stationName: string | null
+          timeToStation: number | null
           towards: string | null
-          updated_at: string | null
+          updatedAt: string | null
         }
         Insert: {
-          created_at?: string
-          destination_id?: string | null
-          destination_name?: string | null
-          expected_arrival?: string | null
+          createdAt?: string
+          destinationName?: string | null
+          destinationNaptanId?: string | null
+          expectedArrival?: string | null
           id?: number
-          line_id?: string | null
-          line_name?: string | null
-          platform_name?: string | null
-          station_id?: string | null
-          station_name?: string | null
-          time_to_station?: number | null
+          lineId?: string | null
+          lineName?: string | null
+          NaptanId?: string | null
+          platformName?: string | null
+          stationName?: string | null
+          timeToStation?: number | null
           towards?: string | null
-          updated_at?: string | null
+          updatedAt?: string | null
         }
         Update: {
-          created_at?: string
-          destination_id?: string | null
-          destination_name?: string | null
-          expected_arrival?: string | null
+          createdAt?: string
+          destinationName?: string | null
+          destinationNaptanId?: string | null
+          expectedArrival?: string | null
           id?: number
-          line_id?: string | null
-          line_name?: string | null
-          platform_name?: string | null
-          station_id?: string | null
-          station_name?: string | null
-          time_to_station?: number | null
+          lineId?: string | null
+          lineName?: string | null
+          NaptanId?: string | null
+          platformName?: string | null
+          stationName?: string | null
+          timeToStation?: number | null
           towards?: string | null
-          updated_at?: string | null
+          updatedAt?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "arrivals_line_id_fkey"
-            columns: ["line_id"]
+            foreignKeyName: "arrivals_lineId_fkey"
+            columns: ["lineId"]
             isOneToOne: true
             referencedRelation: "lines"
             referencedColumns: ["uid"]
           },
           {
-            foreignKeyName: "arrivals_line_name_fkey"
-            columns: ["line_name"]
+            foreignKeyName: "arrivals_lineName_fkey"
+            columns: ["lineName"]
             isOneToOne: true
             referencedRelation: "lines"
             referencedColumns: ["name"]
           },
           {
-            foreignKeyName: "arrivals_station_id_fkey"
-            columns: ["station_id"]
+            foreignKeyName: "arrivals_NaptanId_fkey"
+            columns: ["NaptanId"]
             isOneToOne: true
             referencedRelation: "stations"
             referencedColumns: ["uid"]
           },
           {
-            foreignKeyName: "arrivals_station_name_fkey"
-            columns: ["station_name"]
+            foreignKeyName: "arrivals_stationName_fkey"
+            columns: ["stationName"]
             isOneToOne: true
             referencedRelation: "stations"
             referencedColumns: ["name"]
@@ -118,24 +118,24 @@ export type Database = {
           data: Json | null
           id: number
           latest_update: string
-          station_id: string | null
+          NaptanId: string | null
         }
         Insert: {
           data?: Json | null
           id?: number
           latest_update?: string
-          station_id?: string | null
+          NaptanId?: string | null
         }
         Update: {
           data?: Json | null
           id?: number
           latest_update?: string
-          station_id?: string | null
+          NaptanId?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "real_time_updates_station_id_fkey"
-            columns: ["station_id"]
+            foreignKeyName: "real_time_updates_NaptanId_fkey"
+            columns: ["NaptanId"]
             isOneToOne: true
             referencedRelation: "stations"
             referencedColumns: ["uid"]

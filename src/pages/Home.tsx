@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  addArrival,
-  getStations,
-  subscribeArrivalsTable,
-} from "../api/database/supabase";
+import { getStations } from "../api/database/supabase";
 import { getStationArrivals } from "../api/tfl";
 
 export type TypeStations = {
@@ -56,28 +52,6 @@ function Home() {
     fetchData();
   }, []);
 
-  // A CALLBACK THAT SETUPS SUBSCRIBTION AND HANDLES NEW DATA AS IT COMES IN
-  useEffect(() => {
-    const handleArrivalDataChange = (payload: any) => {
-      console.log("New data received in arrival table:", payload);
-      // 새로운 데이터가 들어올 때마다 상태 업데이트
-      setSearchedStationData((prevData) => [...prevData, payload.new]); // payload.new에서 실시간 데이터를 추출
-    };
-
-    const startSubscription = async () => {
-      const channel = await subscribeArrivalsTable(handleArrivalDataChange);
-
-      // Clean up
-      return () => {
-        if (channel) {
-          channel.unsubscribe();
-        }
-      };
-    };
-
-    startSubscription();
-  }, []);
-
   const fetchStationsData = async (): Promise<TypeStations[]> => {
     try {
       const cachedStations = localStorage.getItem("stations");
@@ -128,70 +102,19 @@ function Home() {
     setTypedStationsList(result);
   };
 
-  //FILTER ARRIVAL DATA FROM API
-  const filterArrival = async (apiData: any) => {
-    console.log("Received apiData in filterArrival:", apiData);
-
-    if (!apiData || apiData.length === 0) {
-      console.error("apiData is undefined, null, or empty");
-      return null;
-    }
-
-    // To process multiple pieces of data, traverse an array
-    const filteredDataArray = apiData.map((item: TypeRealTimeArrival) => {
-      const {
-        id,
-        naptanId,
-        stationName,
-        lineId,
-        lineName,
-        platformName,
-        towards,
-        destinationNaptanId,
-        destinationName,
-        timeToStation,
-        expectedArrival,
-      } = item;
-
-      return {
-        id,
-        naptanId,
-        stationName,
-        lineId,
-        lineName,
-        platformName,
-        towards,
-        destinationNaptanId,
-        destinationName,
-        timeToStation,
-        expectedArrival,
-      };
-    });
-
-    console.log("filteredDataArray:", filteredDataArray);
-    return filteredDataArray;
-  };
-
-  // GET ARRIVAL DATA EVERY 1MINUTE FROM API, SAVE THEM IN DATABASE
+  // GET ARRIVAL DATA EVERY 1MINUTE FROM API, SAVE THEM IN STATE
   const getSearchedStationData = (uid: string) => {
     const fetchData = async (uid: string) => {
       try {
         // Get arrival data from tfl api
         const stationArrivalData = await getStationArrivals(uid);
         console.log("tfl stationArrivalData:", stationArrivalData);
+        setSearchedStationData(stationArrivalData);
 
         if (!stationArrivalData || stationArrivalData.length === 0) {
           console.error("No data returned from TFL API for station:", uid);
           return;
         }
-
-        // Save data in database
-        const data = await filterArrival(stationArrivalData);
-
-        console.log("data before addArrival", data);
-        await addArrival(data);
-
-        console.log("Arrival data added to database.");
       } catch (error) {
         console.error("Error fetching station data:", error);
       }

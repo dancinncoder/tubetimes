@@ -9,83 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      arrivals: {
-        Row: {
-          createdAt: string
-          destinationName: string | null
-          destinationNaptanId: string | null
-          expectedArrival: string | null
-          id: number
-          lineId: string | null
-          lineName: string | null
-          NaptanId: string | null
-          platformName: string | null
-          stationName: string | null
-          timeToStation: number | null
-          towards: string | null
-          updatedAt: string | null
-        }
-        Insert: {
-          createdAt?: string
-          destinationName?: string | null
-          destinationNaptanId?: string | null
-          expectedArrival?: string | null
-          id?: number
-          lineId?: string | null
-          lineName?: string | null
-          NaptanId?: string | null
-          platformName?: string | null
-          stationName?: string | null
-          timeToStation?: number | null
-          towards?: string | null
-          updatedAt?: string | null
-        }
-        Update: {
-          createdAt?: string
-          destinationName?: string | null
-          destinationNaptanId?: string | null
-          expectedArrival?: string | null
-          id?: number
-          lineId?: string | null
-          lineName?: string | null
-          NaptanId?: string | null
-          platformName?: string | null
-          stationName?: string | null
-          timeToStation?: number | null
-          towards?: string | null
-          updatedAt?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "arrivals_lineId_fkey"
-            columns: ["lineId"]
-            isOneToOne: true
-            referencedRelation: "lines"
-            referencedColumns: ["uid"]
-          },
-          {
-            foreignKeyName: "arrivals_lineName_fkey"
-            columns: ["lineName"]
-            isOneToOne: true
-            referencedRelation: "lines"
-            referencedColumns: ["name"]
-          },
-          {
-            foreignKeyName: "arrivals_NaptanId_fkey"
-            columns: ["NaptanId"]
-            isOneToOne: true
-            referencedRelation: "stations"
-            referencedColumns: ["uid"]
-          },
-          {
-            foreignKeyName: "arrivals_stationName_fkey"
-            columns: ["stationName"]
-            isOneToOne: true
-            referencedRelation: "stations"
-            referencedColumns: ["name"]
-          },
-        ]
-      }
       lines: {
         Row: {
           color: string | null
@@ -112,35 +35,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      real_time_updates: {
-        Row: {
-          data: Json | null
-          id: number
-          latest_update: string
-          NaptanId: string | null
-        }
-        Insert: {
-          data?: Json | null
-          id?: number
-          latest_update?: string
-          NaptanId?: string | null
-        }
-        Update: {
-          data?: Json | null
-          id?: number
-          latest_update?: string
-          NaptanId?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "real_time_updates_NaptanId_fkey"
-            columns: ["NaptanId"]
-            isOneToOne: true
-            referencedRelation: "stations"
-            referencedColumns: ["uid"]
-          },
-        ]
       }
       stations: {
         Row: {

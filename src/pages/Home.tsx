@@ -128,7 +128,7 @@ function Home() {
     setInterval(() => {
       getSearchedStationData(uid);
       console.log("real-time data has been updated.");
-    }, 60000); // 60000ms = 1분
+    }, 600000); // 60000ms = 1분
   };
 
   // SUBMIT SEARCHED TERM/UID

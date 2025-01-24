@@ -4,7 +4,7 @@ import Navigation from "./Navigation";
 
 function Layout() {
   return (
-    <div>
+    <div className="flex flex-col relative">
       <Header />
       <Outlet />
       <Navigation />

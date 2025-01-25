@@ -3,7 +3,7 @@ import Logo from "../../../assets/header/logo-50.svg";
 
 function Header() {
   return (
-    <header className="sticky top-[0] flex justify-start w-full h-[64px]  bg-white my-[0] mx-auto px-[190px]">
+    <header className="sticky top-[0] flex justify-start w-full h-[64px]  bg-white my-[0] mx-auto px-[190px] z-[99999999]">
       <div className="flex justify-start w-full ">
         <a
           href="/"

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getStations } from "../api/database/supabase";
 import { getStationArrivals } from "../api/tfl";
+import SearchIcon from "../assets/ui/search-50.svg";
 
 export type TypeStations = {
   created_at: string;
@@ -41,6 +42,22 @@ function Home() {
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const CACHE_EXPIRY = 2592000000; // 1 month
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // HANDLE DROPDOWN VISIBILITY
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowResultBoard(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,7 +125,7 @@ function Home() {
       try {
         // Get arrival data from tfl api
         const stationArrivalData = await getStationArrivals(uid);
-        console.log("tfl stationArrivalData:", stationArrivalData);
+        console.log("New tfl api data has arrived:", stationArrivalData);
         setSearchedStationData(stationArrivalData);
 
         if (!stationArrivalData || stationArrivalData.length === 0) {
@@ -128,7 +145,7 @@ function Home() {
     setInterval(() => {
       getSearchedStationData(uid);
       console.log("real-time data has been updated.");
-    }, 600000); // 60000ms = 1분
+    }, 60000000); // 60000ms = 1 minute
   };
 
   // SUBMIT SEARCHED TERM/UID
@@ -151,33 +168,45 @@ function Home() {
       className="w-full my-[0] mx-auto px-[190px] bg-[#F5F5F5] min-h-[100vh]
     "
     >
-      <h1>Home</h1>
       {/* SEARCH ENGINE */}
-      <div>
-        <input
-          className="border-solid border-2 border-gray-200 rounded-lg"
-          onChange={handleTypeSearchStation}
-          value={station}
-          type="text"
-          placeholder="Search stations..."
-        />
+      <div className="relative" ref={dropdownRef}>
+        <div className="relative py-[20px]">
+          <img
+            src={SearchIcon}
+            height={22}
+            width={22}
+            alt="Search Icon"
+            className="absolute top-1/2 -translate-y-1/2 left-[8px]"
+          />
+          <input
+            className="h-[40px] w-full border-solid border-2 border-gray-200 rounded-lg pl-[35px] focus:outline-[#94afe9]"
+            onChange={handleTypeSearchStation}
+            value={station}
+            type="text"
+            placeholder="Search stations..."
+          />
+        </div>
         {isLoading ? (
           <p>Loading stations...</p>
         ) : (
           showResultBoard && (
-            <ul>
+            <ul className="border absolute top-[70px] max-h-[300px] w-full flex flex-col overflow-y-auto bg-white rounded-[8px] ">
               {
                 typedStationsList.length > 0
                   ? typedStationsList.map((s) => (
                       <li
                         onClick={() => submitSearchTerm(s?.uid, s?.name)} // On click, pass the station data
-                        className="cursor-pointer hover:bg-blue-100 list-none"
+                        className="cursor-pointer hover:bg-blue-100 list-none border-b last:border-0 py-[15px] pl-[35px] pr-[20px]"
                         key={s.id}
                       >
                         <p>{s.name}</p>
                       </li>
                     ))
-                  : station && <p>No stations found.</p> // Show only if there's a search term
+                  : station && (
+                      <p className="border-b last:border-0 py-[15px] pl-[35px] pr-[20px]">
+                        No stations found.
+                      </p>
+                    ) // Show only if there's a search term
               }
             </ul>
           )

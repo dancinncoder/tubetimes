@@ -1,11 +1,14 @@
 import React from "react";
-import Logo from "../../../../public/logo-50.svg";
+import Logo from "../../../assets/header/logo-50.svg";
 
 function Header() {
   return (
-    <div className="flex justify-start w-full h-[57px] p-[10px] bg-white border">
+    <header className="sticky top-[0] flex justify-start w-full h-[64px]  bg-white my-[0] mx-auto px-[190px]">
       <div className="flex justify-start w-full ">
-        <div className="flex justify-center items-center gap-[3px] border cursor-pointer">
+        <a
+          href="/"
+          className="flex justify-center items-center gap-[4px] cursor-pointer no-underline"
+        >
           <img
             src={Logo}
             height={32}
@@ -13,10 +16,10 @@ function Header() {
             alt="Tube Time Logo"
             className="w-[23px] h-[22px]"
           />
-          <p className="text-[18px] font-[700]">TubeTime</p>
-        </div>
+          <p className="text-[20px] font-[700]">TubeTime</p>
+        </a>
       </div>
-    </div>
+    </header>
   );
 }
 

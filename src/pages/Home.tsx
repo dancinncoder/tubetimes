@@ -147,7 +147,10 @@ function Home() {
 
   console.log("searchedStationData:", searchedStationData);
   return (
-    <div>
+    <div
+      className="w-full my-[0] mx-auto px-[190px] bg-[#F5F5F5] min-h-[100vh]
+    "
+    >
       <h1>Home</h1>
       {/* SEARCH ENGINE */}
       <div>

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import HomeIconDefault from "../../../../public/navigation/icon-home-96.svg";
-import HomeIconActivated from "../../../../public/navigation/icon-home-96-activated.svg";
-import MapIconDefault from "../../../../public/navigation/icon-map-90.svg";
-import MapIconActivated from "../../../../public/navigation/icon-map-90-activated.svg";
-import FavoriteIconDefault from "../../../../public/navigation/icon-favorite-96.svg";
-import FavoriteIconActivated from "../../../../public/navigation/icon-favorite-96-activated.svg";
-import SettingIconDefault from "../../../../public/navigation/icon-setting-100.svg";
-import SettingIconActivated from "../../../../public/navigation/icon-setting-100-activated.svg";
+import HomeIconDefault from "../../../assets/navigation/icon-home-96.svg";
+import HomeIconActivated from "../../../assets/navigation/icon-home-96-activated.svg";
+import MapIconDefault from "../../../assets/navigation/icon-map-90.svg";
+import MapIconActivated from "../../../assets/navigation/icon-map-90-activated.svg";
+import FavoriteIconDefault from "../../../assets/navigation/icon-favorite-96.svg";
+import FavoriteIconActivated from "../../../assets/navigation/icon-favorite-96-activated.svg";
+import SettingIconDefault from "../../../assets/navigation/icon-setting-100.svg";
+import SettingIconActivated from "../../../assets/navigation/icon-setting-100-activated.svg";
 import { Link } from "react-router-dom";
 
 function Navigation() {
@@ -41,8 +41,8 @@ function Navigation() {
   ];
 
   return (
-    <div className="flex justify-start fixed bottom-[0] left-[0] w-full h-[67px] p-[10px] bg-white border z-[9999]">
-      <div className="flex justify-center w-full border">
+    <div className="flex justify-start fixed bottom-[0] left-[0] w-full h-[67px] p-[10px] bg-white z-[9999]">
+      <div className="flex justify-center w-full">
         <ul className="flex">
           {navigationList.map((menu, index) => {
             const isActivated =

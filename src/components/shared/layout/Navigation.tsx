@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import HomeIconDefault from "../../../assets/navigation/icon-home-96.svg";
 import HomeIconActivated from "../../../assets/navigation/icon-home-96-activated.svg";
 import MapIconDefault from "../../../assets/navigation/icon-map-90.svg";

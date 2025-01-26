@@ -248,7 +248,7 @@ function Home() {
         ) : (
           showResultBoard && (
             <ul className="border absolute top-[70px] max-h-[300px] w-full flex flex-col overflow-y-auto bg-white rounded-[8px] z-[9999]">
-              {typedStationsList.length > 0
+              {typedStationsList?.length > 0
                 ? typedStationsList.map((s) => (
                     <li
                       onClick={() => submitSearchTerm(s?.uid, s?.name)} // On click, pass the station data

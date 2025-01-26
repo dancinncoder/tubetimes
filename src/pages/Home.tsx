@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getStations } from "../api/database/supabase";
 import { getStationArrivals } from "../api/tfl";
 import SearchIcon from "../assets/ui/search-50.svg";
+import LineData from "../json/line.json";
 
 export type TypeStations = {
   created_at: string;
@@ -43,31 +44,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const CACHE_EXPIRY = 2592000000; // 1 month
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // HANDLE DROPDOWN VISIBILITY
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowResultBoard(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const stationsData = await fetchStationsWithExpiry();
-      setStations(stationsData); // Load all stations into state
-      setIsLoading(false);
-    };
-
-    fetchData();
-  }, []);
+  const fetchIntervalRef = useRef<number | undefined>(undefined);
 
   const fetchStationsData = async (): Promise<TypeStations[]> => {
     try {
@@ -87,15 +64,22 @@ function Home() {
 
   const isCachedStationsExpired = (): boolean => {
     const lastUpdated = localStorage.getItem("stations_last_updated");
-    return lastUpdated ? Date.now() - Number(lastUpdated) > CACHE_EXPIRY : true;
+    if (!lastUpdated) return true;
+
+    const lastUpdatedTimestamp = Number(lastUpdated);
+    return isNaN(lastUpdatedTimestamp)
+      ? true
+      : Date.now() - lastUpdatedTimestamp > CACHE_EXPIRY;
   };
 
   const fetchStationsWithExpiry = async (): Promise<TypeStations[]> => {
-    if (isCachedStationsExpired()) {
-      return fetchStationsData();
+    if (!isCachedStationsExpired()) {
+      const cachedStations = localStorage.getItem("stations");
+      if (cachedStations) {
+        return JSON.parse(cachedStations);
+      }
     }
-    const cachedStations = localStorage.getItem("stations");
-    return cachedStations ? JSON.parse(cachedStations) : [];
+    return fetchStationsData();
   };
 
   const handleTypeSearchStation = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +92,7 @@ function Home() {
       setShowResultBoard(false); // Hide result board if search term is cleared
     } else {
       showTypedStationsList(value);
-      setShowResultBoard(true); // Show result board if there's a search term
+      setShowResultBoard(true); // Show result board if search term is present
     }
   };
 
@@ -142,9 +126,13 @@ function Home() {
 
   // FETCH DATA EVERY 1MINUTE
   const startFetchingDataEveryMinute = (uid: string) => {
-    setInterval(() => {
+    // Clear existing intervals to prevent duplicates
+    clearInterval(fetchIntervalRef.current);
+
+    // Set a new interval and store its ID
+    fetchIntervalRef.current = window.setInterval(() => {
       getSearchedStationData(uid);
-      console.log("real-time data has been updated.");
+      console.log("Real-time data has been updated.");
     }, 60000000); // 60000ms = 1 minute
   };
 
@@ -158,16 +146,85 @@ function Home() {
     setStation(clickedStationName);
     setShowResultBoard(false);
 
-    // After the choice of station, start to fetch data every 1 mintue
+    // After the choice of station, start to fetch data every 1 minute
     startFetchingDataEveryMinute(clickedStationUid);
   };
 
-  console.log("searchedStationData:", searchedStationData);
+  const getLineColor = (lineName: string) => {
+    const line = LineData.find((line) => line.name === lineName);
+    return line ? line.color : "#000000"; // Black as default
+  };
+
+  const getExpectedArrivalTime = (timestamp: string) => {
+    // Convert to a Date object
+    const date = new Date(timestamp);
+
+    // Get hours and minutes
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+
+    // Format to 'HH:mm' (ensure 2 digits for hours and minutes)
+    const formattedTime = `${String(hours).padStart(2, "0")}:${String(
+      minutes
+    ).padStart(2, "0")}`;
+
+    return formattedTime;
+  };
+
+  // Sort the station arrival data based on expectedArrival (timestamp)
+  const sortByExpectedArrival = (data: TypeRealTimeArrival[]) => {
+    return data.sort((a, b) => {
+      const aDate = new Date(a.expectedArrival).getTime(); // transform to Unix timestamp
+      const bDate = new Date(b.expectedArrival).getTime(); // transform to Unix timestamp
+
+      return aDate - bDate; // descending order
+    });
+  };
+
+  // Sorted station arrival data
+  const sortedStationData = sortByExpectedArrival(searchedStationData);
+
+  // Filter arrivals by line
+  const filterByLine = (lineName: string, data: TypeRealTimeArrival[]) => {
+    return data.filter((arrival) => arrival.lineName === lineName);
+  };
+
+  // HANDLE DROPDOWN VISIBILITY
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowResultBoard(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const stationsData = await fetchStationsWithExpiry();
+      setStations(stationsData); // Load all stations into state
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  // Clean up interval on unmount
+  useEffect(() => {
+    return () => {
+      if (fetchIntervalRef.current) {
+        clearInterval(fetchIntervalRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div
-      className="w-full my-[0] mx-auto px-[190px] bg-[#F5F5F5] min-h-[100vh]
-    "
-    >
+    <div className="w-full my-[0] mx-auto px-[20px] sm:px-[30px] md:px-[150px] lg:px-[190px] bg-[#F5F5F5] min-h-[100vh]">
       {/* SEARCH ENGINE */}
       <div className="relative" ref={dropdownRef}>
         <div className="relative py-[20px]">
@@ -190,40 +247,94 @@ function Home() {
           <p>Loading stations...</p>
         ) : (
           showResultBoard && (
-            <ul className="border absolute top-[70px] max-h-[300px] w-full flex flex-col overflow-y-auto bg-white rounded-[8px] ">
-              {
-                typedStationsList.length > 0
-                  ? typedStationsList.map((s) => (
-                      <li
-                        onClick={() => submitSearchTerm(s?.uid, s?.name)} // On click, pass the station data
-                        className="cursor-pointer hover:bg-blue-100 list-none border-b last:border-0 py-[15px] pl-[35px] pr-[20px]"
-                        key={s.id}
-                      >
-                        <p>{s.name}</p>
-                      </li>
-                    ))
-                  : station && (
-                      <p className="border-b last:border-0 py-[15px] pl-[35px] pr-[20px]">
-                        No stations found.
-                      </p>
-                    ) // Show only if there's a search term
-              }
+            <ul className="border absolute top-[70px] max-h-[300px] w-full flex flex-col overflow-y-auto bg-white rounded-[8px] z-[9999]">
+              {typedStationsList.length > 0
+                ? typedStationsList.map((s) => (
+                    <li
+                      onClick={() => submitSearchTerm(s?.uid, s?.name)} // On click, pass the station data
+                      className="cursor-pointer hover:bg-blue-100 list-none border-b last:border-0 py-[15px] pl-[35px] pr-[20px]"
+                      key={s.id}
+                    >
+                      <p>{s.name}</p>
+                    </li>
+                  ))
+                : station && (
+                    <p className="border-b last:border-0 py-[15px] pl-[35px] pr-[20px]">
+                      No stations found.
+                    </p>
+                  )}
             </ul>
           )
         )}
       </div>
+
       {/* SEARCH BOARD */}
-      <div>
-        {searchedStationData.length > 0 ? (
-          <ul>
-            {searchedStationData.map((arrival: any, index: number) => (
-              <li key={index}>
-                <p>Line: {arrival.lineName}</p>
-                <p>Expected Arrival: {arrival.expectedArrival}</p>
-                <p>Destination: {arrival.destinationName}</p>
-              </li>
-            ))}
-          </ul>
+      <div className="">
+        {station ? (
+          <div>
+            {sortedStationData.length > 0 ? (
+              <div className="flex flex-col gap-[10px] mb-[87px]">
+                <p className="uppercase text-center sm:text-start pb-[20px] sm:pb-[10px] color-[#4B5563] font-[700]">
+                  {station} tube arrivals
+                </p>
+
+                {/* Filter By Line */}
+                <ul className="flex flex-col gap-[35px] sm:gap-[25px]">
+                  {LineData.map((line, index) => {
+                    const filteredData = filterByLine(
+                      line.name,
+                      sortedStationData
+                    );
+                    if (filteredData.length === 0) return null;
+
+                    const lineColor = getLineColor(line.name);
+                    return (
+                      <div key={index} className="">
+                        <div className="flex flex-col">
+                          {/* 라인명 */}
+                          <p className=" pl-[5px] sm:pl-[0] font-[700] text-[16px] pb-[10px]">
+                            {line.name}
+                          </p>
+                          <ul className="flex flex-col gap-[15px]">
+                            {filteredData.map((arrival: any, index: number) => {
+                              const expectedArrivalTime =
+                                getExpectedArrivalTime(arrival.expectedArrival);
+                              return (
+                                <li
+                                  key={index}
+                                  className="px-[15px] bg-white rounded-[13px] p-[10px] min-w-[250px]"
+                                >
+                                  <div className="flex relative justify-start">
+                                    <div className="flex relative">
+                                      <div
+                                        className="flex absolute top-1/2 -translate-y-1/2 w-[8px] h-[8px] sm:w-[11px] sm:h-[11px] rounded-[50%]"
+                                        style={{ backgroundColor: lineColor }}
+                                      ></div>
+                                      <p className="text-[12px] sm:text-[14px] font-[700] pl-[13px] sm:pl-[19px]">
+                                        {station} - {arrival.towards}
+                                      </p>
+                                    </div>
+                                    <p className="text-[14px] font-[700] pl-[19px]"></p>
+                                  </div>
+                                  <p>
+                                    {expectedArrivalTime} |{" "}
+                                    {arrival.platformName}
+                                  </p>
+                                  {/* <p>Direction: {arrival.direction}</p> */}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : (
+              <p>No arrivals data available</p>
+            )}
+          </div>
         ) : (
           <p></p>
         )}

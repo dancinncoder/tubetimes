@@ -43,7 +43,7 @@ function Navigation() {
   return (
     <div className="flex justify-start fixed bottom-[0] left-[0] w-full h-[67px] p-[10px] bg-white z-[9999]">
       <div className="flex justify-center w-full">
-        <ul className="flex">
+        <ul className="flex gap-[0px] sm:gap-[10px] md:gap-[20px] ">
           {navigationList.map((menu, index) => {
             const isActivated =
               activatedMenuIndex === index || hoveredMenuIndex === index;
@@ -52,7 +52,7 @@ function Navigation() {
             return (
               <li
                 key={index}
-                className="mx-[10px] min-w-[74px]"
+                className="mx-[0] sm:mx-[10px] min-w-[74px]"
                 onMouseEnter={() => setHoveredMenuIndex(index)}
                 onMouseLeave={() => setHoveredMenuIndex(null)}
               >

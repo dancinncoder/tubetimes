@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "Bakerloo",
+    "color": "#B36305",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "bakerloo"
+  },
+  {
+    "id": 2,
+    "name": "Central",
+    "color": "#E32017",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "central"
+  },
+  {
+    "id": 3,
+    "name": "Circle",
+    "color": "#FFD300",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "circle"
+  },
+  {
+    "id": 4,
+    "name": "District",
+    "color": "#00782A",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "district"
+  },
+  {
+    "id": 5,
+    "name": "Hammersmith & City",
+    "color": "#F3A9BB",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "hammersmith-city"
+  },
+  {
+    "id": 6,
+    "name": "Jubilee",
+    "color": "#A0A5A9",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "jubilee"
+  },
+  {
+    "id": 7,
+    "name": "Metropolitan",
+    "color": "#9B0056",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "metropolitan"
+  },
+  {
+    "id": 8,
+    "name": "Northern",
+    "color": "#000000",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "northern"
+  },
+  {
+    "id": 9,
+    "name": "Piccadilly",
+    "color": "#003688",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "piccadilly"
+  },
+  {
+    "id": 10,
+    "name": "Waterloo & City",
+    "color": "#0098D4",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "waterloo-city"
+  },
+  {
+    "id": 11,
+    "name": "Elizabeth line",
+    "color": "#95CDBA",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "elizabeth"
+  },
+  {
+    "id": 12,
+    "name": "Victoria",
+    "color": "#00A9E0",
+    "created_at": "2025-01-13 19:15:33.554815+00",
+    "updated_at": "2025-01-13 19:15:33.554815+00",
+    "uid": "victoria"
+  }
+]

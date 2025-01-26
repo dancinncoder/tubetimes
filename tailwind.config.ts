@@ -5,7 +5,15 @@ const config: Config = {
     "./src/**/*.{html,js,ts,jsx,tsx}", // set the route of using files
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        xs: "570px",
+        sm: "750px",
+        md: "1090px",
+        lg: "1280px",
+        xl: "1440px",
+      },
+    },
   },
   plugins: [],
 };

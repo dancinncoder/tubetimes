@@ -34,6 +34,7 @@ export type TypeRealTimeArrival = {
 function Home() {
   const [stations, setStations] = useState<TypeStations[]>([]); // All stations data
   const [station, setStation] = useState<string>(""); // Search input
+  const [stationName, setStationName] = useState<string>(station); // Station name for result board
   const [typedStationsList, setTypedStationsList] = useState<TypeStations[]>(
     []
   ); // Search results for list dropdown
@@ -103,6 +104,15 @@ function Home() {
     setTypedStationsList(result);
   };
 
+  // GET STATION NAME USING UID
+  const getStationName = (uid: string) => {
+    const stationsString = localStorage.getItem("stations");
+    const stations = stationsString ? JSON.parse(stationsString) : [];
+    const station = stations.find((station: any) => station.uid === uid);
+
+    return station ? station.name : null;
+  };
+
   // GET ARRIVAL DATA EVERY 1MINUTE FROM API, SAVE THEM IN STATE
   const getSearchedStationData = (uid: string) => {
     const fetchData = async (uid: string) => {
@@ -122,6 +132,8 @@ function Home() {
     };
 
     fetchData(uid);
+    const stationName = getStationName(uid);
+    setStationName(stationName);
   };
 
   // FETCH DATA EVERY 1MINUTE
@@ -310,13 +322,13 @@ function Home() {
                                         className="flex absolute top-1/2 -translate-y-1/2 w-[8px] h-[8px] sm:w-[11px] sm:h-[11px] rounded-[50%]"
                                         style={{ backgroundColor: lineColor }}
                                       ></div>
-                                      <p className="text-[12px] sm:text-[14px] font-[700] pl-[13px] sm:pl-[19px]">
-                                        {station} - {arrival.towards}
+                                      <p className="text-[13px] sm:text-[14px] font-[700] pl-[13px] sm:pl-[19px]">
+                                        {stationName} - {arrival.towards}
                                       </p>
                                     </div>
                                     <p className="text-[14px] font-[700] pl-[19px]"></p>
                                   </div>
-                                  <p>
+                                  <p className="text-[13px] sm:text-[14px]">
                                     {expectedArrivalTime} |{" "}
                                     {arrival.platformName}
                                   </p>

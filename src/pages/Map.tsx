@@ -1,6 +1,6 @@
 import { useState } from "react";
 import TubeMapImageSmall from "../assets/tube-map-sm.png";
-import TubeMapImageBig from "../assets/tube-map.png";
+import TubeMapImageBig from "../assets/tube-map-lg.png";
 import CloseIcon from "../assets/ui/close-100.svg";
 
 function Map() {

@@ -32,18 +32,23 @@ export type TypeRealTimeArrival = {
 };
 
 function Home() {
-  const [stations, setStations] = useState<TypeStations[]>([]); // All stations data
-  const [station, setStation] = useState<string>(""); // Search input
-  const [stationName, setStationName] = useState<string>(station); // Station name for result board
+  // All stations data
+  const [stations, setStations] = useState<TypeStations[]>([]);
+  // Search input
+  const [station, setStation] = useState<string>("");
+  // Station name for result board
+  const [stationName, setStationName] = useState<string>(station);
+  // Search results for list dropdown
   const [typedStationsList, setTypedStationsList] = useState<TypeStations[]>(
     []
-  ); // Search results for list dropdown
-  const [showResultBoard, setShowResultBoard] = useState<boolean>(false); // Flag to show/hide the search result list
+  );
+  // Flag to show/hide the search result list
+  const [showResultBoard, setShowResultBoard] = useState<boolean>(false);
   const [searchedStationData, setSearchedStationData] = useState<
     TypeRealTimeArrival[]
   >([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const CACHE_EXPIRY = 2592000000; // 1 month
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const fetchIntervalRef = useRef<number | undefined>(undefined);
 
@@ -183,7 +188,7 @@ function Home() {
     return formattedTime;
   };
 
-  // Sort the station arrival data based on expectedArrival (timestamp)
+  // SORT THE STATION ARRIVAL DATA BASED ON EXPECTEDARRIVAL (TIMESTAMP)
   const sortByExpectedArrival = (data: TypeRealTimeArrival[]) => {
     return data.sort((a, b) => {
       const aDate = new Date(a.expectedArrival).getTime(); // transform to Unix timestamp
@@ -193,10 +198,10 @@ function Home() {
     });
   };
 
-  // Sorted station arrival data
+  // SORTED STATION ARRIVAL DATA
   const sortedStationData = sortByExpectedArrival(searchedStationData);
 
-  // Filter arrivals by line
+  // FILTER ARRIVALS BY LINE
   const filterByLine = (lineName: string, data: TypeRealTimeArrival[]) => {
     return data.filter((arrival) => arrival.lineName === lineName);
   };
@@ -220,7 +225,6 @@ function Home() {
     const fetchData = async () => {
       const stationsData = await fetchStationsWithExpiry();
       setStations(stationsData); // Load all stations into state
-      setIsLoading(false);
     };
 
     fetchData();
@@ -255,28 +259,24 @@ function Home() {
             placeholder="Search stations..."
           />
         </div>
-        {isLoading ? (
-          <p>Loading stations...</p>
-        ) : (
-          showResultBoard && (
-            <ul className="border absolute top-[70px] max-h-[300px] w-full flex flex-col overflow-y-auto bg-white rounded-[8px] z-[9999]">
-              {typedStationsList?.length > 0
-                ? typedStationsList.map((s) => (
-                    <li
-                      onClick={() => submitSearchTerm(s?.uid, s?.name)} // On click, pass the station data
-                      className="cursor-pointer hover:bg-blue-100 list-none border-b last:border-0 py-[15px] pl-[35px] pr-[20px]"
-                      key={s.id}
-                    >
-                      <p>{s.name}</p>
-                    </li>
-                  ))
-                : station && (
-                    <p className="border-b last:border-0 py-[15px] pl-[35px] pr-[20px]">
-                      No stations found.
-                    </p>
-                  )}
-            </ul>
-          )
+        {showResultBoard && (
+          <ul className="border absolute top-[70px] max-h-[300px] w-full flex flex-col overflow-y-auto bg-white rounded-[8px] z-[9999]">
+            {typedStationsList?.length > 0
+              ? typedStationsList?.map((s) => (
+                  <li
+                    onClick={() => submitSearchTerm(s?.uid, s?.name)} // On click, pass the station data
+                    className="cursor-pointer hover:bg-blue-100 list-none border-b last:border-0 py-[15px] pl-[35px] pr-[20px]"
+                    key={s.id}
+                  >
+                    <p>{s.name}</p>
+                  </li>
+                ))
+              : station && (
+                  <p className="border-b last:border-0 py-[15px] pl-[35px] pr-[20px]">
+                    No stations found.
+                  </p>
+                )}
+          </ul>
         )}
       </div>
 

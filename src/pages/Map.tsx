@@ -1,5 +1,6 @@
 import { useState } from "react";
-import TubeMapImage from "../assets/tube-map.png";
+import TubeMapImageSmall from "../assets/tube-map-sm.png";
+import TubeMapImageBig from "../assets/tube-map.png";
 import CloseIcon from "../assets/ui/close-100.svg";
 
 function Map() {
@@ -17,7 +18,7 @@ function Map() {
         {/* Open modal when the img is clicked */}
         <img
           className="min-w-[300px] sm:min-w-[700px] md:min-w-[900px] lg:min-w-[900px] cursor-pointer"
-          src={TubeMapImage}
+          src={TubeMapImageSmall}
           width={500}
           height={500}
           alt="Tube Map"
@@ -41,7 +42,7 @@ function Map() {
             </div>
             <img
               className="max-w-full max-h-[75vh] object-contain"
-              src={TubeMapImage}
+              src={TubeMapImageBig}
               alt="Zoomed Tube Map"
             />
           </div>

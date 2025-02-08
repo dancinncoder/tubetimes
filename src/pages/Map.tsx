@@ -13,7 +13,7 @@ function Map() {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="flex justify-center items-start w-full my-0 mx-auto px-[20px] sm:px-[30px] md:px-[150px] lg:px-[190px] bg-[#F5F5F5] h-[calc(100vh-80px)] overflow-auto pt-[67px] sm:pt-[37px] md:pt-[27px]">
+    <div className="flex justify-center items-start w-full my-0 mx-auto px-[20px] sm:px-[30px] md:px-[150px] lg:px-[190px] bg-[#F5F5F5] min-h-[calc(100vh-131px)] overflow-auto pt-[67px] sm:pt-[37px] md:pt-[27px]">
       <div className="flex justify-center items-center md:py-[50px] lg:py-[20px]">
         {/* Open modal when the img is clicked */}
         <img

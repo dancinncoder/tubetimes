@@ -240,7 +240,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="w-full my-[0] mx-auto px-[20px] sm:px-[30px] md:px-[150px] lg:px-[190px] bg-[#F5F5F5] min-h-[100vh]">
+    <div className="w-full my-[0] mx-auto px-[20px] sm:px-[30px] md:px-[150px] lg:px-[190px] bg-[#F5F5F5] min-h-[calc(100vh-131px)]">
       {/* SEARCH ENGINE */}
       <div className="relative" ref={dropdownRef}>
         <div className="relative py-[20px]">

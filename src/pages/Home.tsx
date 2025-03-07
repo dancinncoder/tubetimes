@@ -536,9 +536,9 @@ function Home() {
             {/* Filter By Line */}
             <ul className="flex flex-col flex-wrap sm:flex-row gap-[10px] sm:gap-[15px] ">
               {favoriteArrivalData.map((arrival, index) => {
-                const expectedArrivalTime = getExpectedArrivalTime(
-                  arrival.expectedArrival
-                );
+                // const expectedArrivalTime = getExpectedArrivalTime(
+                //   arrival.expectedArrival
+                // );
                 const lineColor = getLineColor(arrival.lineName); // Get the line color for each station
 
                 return (

@@ -43,6 +43,8 @@ export type TypeFavoriteStationsList = {
   towards: string;
 };
 
+// TODO: Complete Favorite Page Using Local Storage
+
 function Home() {
   // All stations data
   const [stations, setStations] = useState<TypeStations[]>([]);

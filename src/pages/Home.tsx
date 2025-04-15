@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { getStations } from "../api/database/supabase";
 import { getStationArrivals } from "../api/tfl";
 import SearchIcon from "../assets/ui/search-50.svg";
 // import FavouriteIcon from "../assets/navigation/icon-favorite-48.svg";
 // import FavouriteIconActivated from "../assets/navigation/icon-favorite-48-activated.svg";
 import LineData from "../json/line.json";
+import StationData from "../json/station.json";
 
 export type TypeStations = {
-  created_at: string;
   id: number;
+  name: string;
   lat: number;
   long: number;
-  name: string;
-  uid: string;
+  zone: string | number;
+  created_at: string;
   updated_at: string;
-  zone: string;
+  uid: string;
 };
 
 export type TypeRealTimeArrival = {
@@ -69,46 +69,8 @@ function Home() {
   const [searchedStationData, setSearchedStationData] = useState<
     TypeRealTimeArrival[]
   >([]);
-  const CACHE_EXPIRY = 2592000000; // 1 month
-  // Refs
   const dropdownRef = useRef<HTMLDivElement>(null);
   const fetchIntervalRef = useRef<number | undefined>(undefined);
-
-  const fetchStationsData = async (): Promise<TypeStations[]> => {
-    try {
-      const cachedStations = localStorage.getItem("stations");
-      if (cachedStations) {
-        return JSON.parse(cachedStations);
-      }
-      const stationsResponse = await getStations();
-      localStorage.setItem("stations", JSON.stringify(stationsResponse));
-      localStorage.setItem("stations_last_updated", Date.now().toString());
-      return stationsResponse;
-    } catch (error) {
-      console.error("Failed to fetch stations data:", error);
-      return [];
-    }
-  };
-
-  const isCachedStationsExpired = (): boolean => {
-    const lastUpdated = localStorage.getItem("stations_last_updated");
-    if (!lastUpdated) return true;
-
-    const lastUpdatedTimestamp = Number(lastUpdated);
-    return isNaN(lastUpdatedTimestamp)
-      ? true
-      : Date.now() - lastUpdatedTimestamp > CACHE_EXPIRY;
-  };
-
-  const fetchStationsWithExpiry = async (): Promise<TypeStations[]> => {
-    if (!isCachedStationsExpired()) {
-      const cachedStations = localStorage.getItem("stations");
-      if (cachedStations) {
-        return JSON.parse(cachedStations);
-      }
-    }
-    return fetchStationsData();
-  };
 
   const handleTypeSearchStation = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -280,9 +242,7 @@ function Home() {
 
       // Request real-time tube arrival data
       submitFavorite(naptanId);
-      alert(
-        `${stationName} on ${lineName} line towards ${towards} has saved in the favorite list.`
-      );
+      alert(`${stationName} has added in your favorite list.`);
     }
     console.log("favoriteList:", favoriteStationsList);
   };
@@ -304,8 +264,9 @@ function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const stationsData = await fetchStationsWithExpiry();
+      const stationsData = StationData;
       setStations(stationsData); // Load all stations into state
+      console.log("Loaded station data:", stationsData);
     };
 
     fetchData();

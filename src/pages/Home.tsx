@@ -99,7 +99,7 @@ function Home() {
     const stations = stationsString ? JSON.parse(stationsString) : [];
     const station = stations.find((station: any) => station.uid === uid);
 
-    return station ? station.name : null;
+    return station ? station.name : "bingo";
   };
 
   // GET ARRIVAL DATA EVERY 1MINUTE FROM API, SAVE THEM IN STATE
@@ -340,6 +340,7 @@ function Home() {
   }, [favoriteStationsList]);
 
   console.log("favoritelist:", favoriteArrivalData);
+  console.log("stationName", stationName);
 
   return (
     <div className="w-full my-[0] mx-auto px-[20px] sm:px-[30px] md:px-[150px] lg:px-[190px] bg-[#F5F5F5] min-h-[calc(100vh-131px)]">

@@ -95,13 +95,9 @@ function Home() {
 
   // GET STATION NAME USING UID
   const getStationName = (uid: string) => {
-    // const stationsString = localStorage.getItem("stations");
-    // // const stations = stationsString ? JSON.parse(stationsString) : [];
-    // console.log("check:", stations);
     const station = stations.find((station: any) => station.uid === uid);
-    // console.log("STATION:", station);
 
-    return station ? station.name : "bingo";
+    return station ? station.name : "";
   };
 
   // GET ARRIVAL DATA EVERY 1MINUTE FROM API, SAVE THEM IN STATE
@@ -553,8 +549,10 @@ function Home() {
           <>
             <p className="uppercase text-center sm:text-start pb-[20px] sm:pb-[10px] color-[#4B5563] font-[700]">
               Favorite Stations
-            </p>{" "}
-            <p>Save your favorite tube stations..</p>
+            </p>
+            <p className="text-center sm:text-left">
+              Save your favorite tube stations..
+            </p>
           </>
         )}
       </div>

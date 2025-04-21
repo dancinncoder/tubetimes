@@ -95,9 +95,11 @@ function Home() {
 
   // GET STATION NAME USING UID
   const getStationName = (uid: string) => {
-    const stationsString = localStorage.getItem("stations");
-    const stations = stationsString ? JSON.parse(stationsString) : [];
+    // const stationsString = localStorage.getItem("stations");
+    // // const stations = stationsString ? JSON.parse(stationsString) : [];
+    // console.log("check:", stations);
     const station = stations.find((station: any) => station.uid === uid);
+    // console.log("STATION:", station);
 
     return station ? station.name : "bingo";
   };

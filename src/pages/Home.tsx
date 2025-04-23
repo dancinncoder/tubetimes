@@ -5,45 +5,11 @@ import SearchIcon from "../assets/ui/search-50.svg";
 // import FavouriteIconActivated from "../assets/navigation/icon-favorite-48-activated.svg";
 import LineData from "../json/line.json";
 import StationData from "../json/station.json";
-
-export type TypeStations = {
-  id: number;
-  name: string;
-  lat: number;
-  long: number;
-  zone: string | number;
-  created_at: string;
-  updated_at: string;
-  uid: string;
-};
-
-export type TypeRealTimeArrival = {
-  id: number;
-  naptanId: string;
-  stationName: string;
-  lineId: string;
-  lineName: string;
-  platformName: string;
-  towards: string;
-  destinationNaptanId: string;
-  destinationName: string;
-  timeToStation: number;
-  expectedArrival: number;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type TypeFavoriteStationsList = {
-  id: number;
-  naptanId: string;
-  stationName: string;
-  lineId: string;
-  lineName: string;
-  platformName: string;
-  towards: string;
-};
-
-// TODO: Complete Favorite Page Using Local Storage
+import {
+  TypeFavoriteStationsList,
+  TypeRealTimeArrival,
+  TypeStations,
+} from "../type/types";
 
 function Home() {
   // All stations data
@@ -71,6 +37,98 @@ function Home() {
   >([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const fetchIntervalRef = useRef<number | undefined>(undefined);
+
+  // HANDLE DROPDOWN VISIBILITY
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowResultBoard(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const stationsData = StationData;
+      setStations(stationsData); // Load all stations into state
+      console.log("Loaded station data:", stationsData);
+    };
+
+    fetchData();
+  }, []);
+
+  // Clean up interval on unmount
+  useEffect(() => {
+    return () => {
+      if (fetchIntervalRef.current) {
+        clearInterval(fetchIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // GET STORED FAVORITE STATION LIST FROM LOCAL STORAGE
+  useEffect(() => {
+    const storedFavoriteList = localStorage.getItem("favoriteList");
+    setFavoriteStationsList(
+      storedFavoriteList ? JSON.parse(storedFavoriteList) : []
+    );
+  }, []);
+
+  useEffect(() => {
+    const updatedFavoriteRealTimeData = async () => {
+      const updatedData: TypeRealTimeArrival[] = [];
+
+      // Loop through favorite stations list to fetch real-time data
+      for (const station of favoriteStationsList) {
+        try {
+          // Fetch real-time arrival data for each station using naptanId
+          const data = await getSearchedStationData(station.naptanId);
+          console.log("here data:", data);
+          if (data && data.length > 0) {
+            updatedData.push(data[0]); // Push only the first item since the API should return sorted data
+          } else {
+            // If no data returned, use a fallback data structure
+            updatedData.push({
+              id: station.id,
+              naptanId: station.naptanId,
+              stationName: station.stationName,
+              lineId: station.lineId,
+              lineName: station.lineName,
+              platformName: station.platformName,
+              towards: station.towards,
+              destinationNaptanId: station.naptanId,
+              destinationName: "",
+              timeToStation: 0,
+              expectedArrival: 0,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            });
+          }
+        } catch (error) {
+          console.error(
+            "Error fetching real-time data for station:",
+            station.stationName,
+            error
+          );
+        }
+      }
+
+      setFavoriteArrivalData(updatedData); // Update state with new data
+    };
+
+    if (favoriteStationsList.length > 0) {
+      updatedFavoriteRealTimeData(); // Initial fetch for favorite stations
+      const interval = setInterval(updatedFavoriteRealTimeData, 600000000);
+
+      return () => clearInterval(interval); // Clean up interval when the component unmounts
+    }
+  }, [favoriteStationsList]);
 
   const handleTypeSearchStation = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -245,99 +303,7 @@ function Home() {
     console.log("favoriteList:", favoriteStationsList);
   };
 
-  // HANDLE DROPDOWN VISIBILITY
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowResultBoard(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const stationsData = StationData;
-      setStations(stationsData); // Load all stations into state
-      console.log("Loaded station data:", stationsData);
-    };
-
-    fetchData();
-  }, []);
-
-  // Clean up interval on unmount
-  useEffect(() => {
-    return () => {
-      if (fetchIntervalRef.current) {
-        clearInterval(fetchIntervalRef.current);
-      }
-    };
-  }, []);
-
-  // GET STORED FAVORITE STATION LIST FROM LOCAL STORAGE
-  useEffect(() => {
-    const storedFavoriteList = localStorage.getItem("favoriteList");
-    setFavoriteStationsList(
-      storedFavoriteList ? JSON.parse(storedFavoriteList) : []
-    );
-  }, []);
-
-  useEffect(() => {
-    const updatedFavoriteRealTimeData = async () => {
-      const updatedData: TypeRealTimeArrival[] = [];
-
-      // Loop through favorite stations list to fetch real-time data
-      for (const station of favoriteStationsList) {
-        try {
-          // Fetch real-time arrival data for each station using naptanId
-          const data = await getSearchedStationData(station.naptanId);
-          console.log("here data:", data);
-          if (data && data.length > 0) {
-            updatedData.push(data[0]); // Push only the first item since the API should return sorted data
-          } else {
-            // If no data returned, use a fallback data structure
-            updatedData.push({
-              id: station.id,
-              naptanId: station.naptanId,
-              stationName: station.stationName,
-              lineId: station.lineId,
-              lineName: station.lineName,
-              platformName: station.platformName,
-              towards: station.towards,
-              destinationNaptanId: station.naptanId,
-              destinationName: "",
-              timeToStation: 0,
-              expectedArrival: 0,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            });
-          }
-        } catch (error) {
-          console.error(
-            "Error fetching real-time data for station:",
-            station.stationName,
-            error
-          );
-        }
-      }
-
-      setFavoriteArrivalData(updatedData); // Update state with new data
-    };
-
-    if (favoriteStationsList.length > 0) {
-      updatedFavoriteRealTimeData(); // Initial fetch for favorite stations
-      const interval = setInterval(updatedFavoriteRealTimeData, 600000000);
-
-      return () => clearInterval(interval); // Clean up interval when the component unmounts
-    }
-  }, [favoriteStationsList]);
-
-  console.log("favoritelist:", favoriteArrivalData);
+  console.log("favoriteArrivalData:", favoriteArrivalData);
   console.log("stationName", stationName);
 
   return (
@@ -494,7 +460,7 @@ function Home() {
             </p>
 
             {/* Filter By Line */}
-            <ul className="flex flex-col flex-wrap sm:flex-row gap-[10px] sm:gap-[15px] ">
+            <ul className="flex flex-col flex-wrap sm:flex-row gap-[10px] sm:gap-[15px]">
               {favoriteArrivalData.map((arrival, index) => {
                 // const expectedArrivalTime = getExpectedArrivalTime(
                 //   arrival.expectedArrival

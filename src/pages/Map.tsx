@@ -14,15 +14,20 @@ function Map() {
 
   return (
     <div className="flex justify-center items-start w-full my-0 mx-auto px-[20px] sm:px-[30px] md:px-[150px] lg:px-[190px] bg-[#F5F5F5] min-h-[calc(100vh-131px)] overflow-auto pt-[67px] sm:pt-[37px] md:pt-[27px]">
-      <div className="flex justify-center items-center md:py-[50px] lg:py-[20px]">
+      <div className="relative flex justify-center items-center md:py-[50px] lg:py-[20px]">
         {/* Open modal when the img is clicked */}
+        <div
+          onClick={openModal}
+          className="absolute top-[0] left-[0] flex justify-center items-center h-full w-full min-w-[300px] xs:min-w-[500px] sm:min-w-[700px] md:min-w-[900px] lg:min-w-[900px] cursor-pointer z-9999 bg-slate-400/50"
+        >
+          <p className="p-[15px] bg-white/90 rounded-[13px]">Open The Map</p>
+        </div>
         <img
-          className="min-w-[300px] sm:min-w-[700px] md:min-w-[900px] lg:min-w-[900px] cursor-pointer"
+          className="min-w-[300px] sm:min-w-[700px] md:min-w-[900px] lg:min-w-[900px] cursor-pointer z-9998"
           src={TubeMapImageSmall}
           width={500}
           height={500}
           alt="Tube Map"
-          onClick={openModal}
         />
       </div>
 

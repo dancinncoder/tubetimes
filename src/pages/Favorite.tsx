@@ -30,7 +30,7 @@ function Favorite() {
       <br />
       {/* <p className="text-center sm:text-left"> Favorite page is coming soon!</p> */}
       <div className="flex flex-col gap-[10px] mb-[87px]">
-        <p className="uppercase text-center sm:text-start pb-[20px] sm:pb-[10px] color-[#4B5563] font-[700]">
+        <p className="text-center sm:text-start pb-[20px] sm:pb-[10px] color-[#4B5563] font-[700]">
           Favorite Stations
         </p>
         {/* Filter By Line */}
